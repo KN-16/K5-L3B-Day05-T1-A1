@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prototype LAB5 · T1 Y tế (Pharmacity) · Một ca ở ba mức tự chủ</title>
+<style>
+:root {
+  --ink: #1d2321;
+  --mut: #6b6f6c;
+  --line: #dcd8cf;
+  --bg: #f6f4ef;
+  --card: #fff;
+  --g: #2e6a4f;
+  --gb: #e5f1ea;
+  --a: #8a6516;
+  --ab: #fbefd3;
+  --r: #a33b2b;
+  --rb: #f8e3df;
+  --b: #28507a;
+  --bb: #e3ecf6;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Be Vietnam Pro", "Noto Sans", "Segoe UI", Arial, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 14.8px;
+  line-height: 1.45;
+}
+header {
+  padding: 16px 28px 12px;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+h1 { font-size: 19.5px; margin: 0 0 4px; }
+.sub { color: var(--mut); font-size: 13.5px; }
+.toggle {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.toggle span { font-size: 13.5px; color: var(--mut); margin-right: 4px; }
+.toggle button {
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 13.8px;
+  cursor: pointer;
+}
+.toggle button.on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+  font-weight: 600;
+}
+main {
+  display: grid;
+  grid-template-columns: 430px 1fr;
+  gap: 24px;
+  padding: 20px 28px 28px;
+  max-width: 1340px;
+  margin: 0 auto;
+}
+@media (max-width: 960px) {
+  main { grid-template-columns: 1fr; }
+}
+.phone {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+  align-self: start;
+}
+.bar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--mut);
+  padding: 0 6px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.trip {
+  margin: 10px 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bb);
+  border: 1px solid #c5d7ec;
+  font-size: 13.2px;
+}
+.trip b { color: var(--b); }
+.trip.red-ctx {
+  background: var(--rb);
+  border-color: #e6b9b0;
+}
+.trip.red-ctx b { color: var(--r); }
+.scene-switch {
+  display: flex;
+  gap: 6px;
+  margin: 0 4px 8px;
+}
+.scene-switch button {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: #f8f7f3;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--mut);
+}
+.scene-switch button.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+  font-weight: 600;
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px 4px;
+  min-height: 430px;
+}
+.me {
+  align-self: flex-end;
+  background: var(--b);
+  color: #fff;
+  padding: 9px 12px;
+  border-radius: 14px 14px 2px 14px;
+  max-width: 86%;
+  font-size: 14px;
+}
+.ai {
+  align-self: flex-start;
+  background: #f1efe9;
+  padding: 10px 12px;
+  border-radius: 14px 14px 14px 2px;
+  max-width: 95%;
+  font-size: 14px;
+}
+.ai .who {
+  font-size: 12px;
+  color: var(--mut);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.conf {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin: 4px 0 4px;
+  background: var(--ab);
+  color: var(--a);
+  font-weight: 600;
+}
+.conf.red { background: var(--rb); color: var(--r); }
+.conf.grn { background: var(--gb); color: var(--g); }
+.ev {
+  font-size: 12.3px;
+  color: var(--mut);
+  border-left: 3px solid var(--line);
+  padding-left: 8px;
+  margin-top: 8px;
+}
+.opt {
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin-top: 8px;
+  background: #fff;
+  font-size: 13.8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+.opt.sel { border-color: var(--g); background: var(--gb); }
+.opt small { color: var(--mut); display: block; font-size: 12.2px; }
+.box {
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  font-size: 13.5px;
+}
+.box.hold { background: var(--gb); border: 1px solid #bcd9c8; }
+.box.warn { background: var(--ab); border: 1px solid #ecd59e; }
+.box.done { background: var(--bb); border: 1px solid #bcd0e6; }
+.box.red { background: var(--rb); border: 1px solid #e9bdb4; }
+.btns {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 7px 11px;
+  font: inherit;
+  font-size: 13.2px;
+  cursor: pointer;
+  background: #e8e5de;
+  font-weight: 500;
+}
+.btn:hover { opacity: .9; }
+.btn.pri { background: var(--g); color: #fff; font-weight: 600; }
+.btn.out { background: #fff; border: 1.5px solid var(--ink); }
+.btn.danger { background: var(--r); color: #fff; font-weight: 600; }
+.timer { font-variant-numeric: tabular-nums; font-weight: 700; }
+.n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #c2410c;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-right: 4px;
+  vertical-align: 1px;
+  flex: none;
+}
+.hide-n .n { display: none; }
+aside {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 15px 18px;
+}
+.panel h2 { font-size: 15.5px; margin: 0 0 8px; }
+
+/* CONSOLE AI ĐƯỢC BÁO · NHẬN ĐƯỢC GÌ */
+.console-panel {
+  border: 2px solid #b8c9dc;
+  background: #f9fbfd;
+  box-shadow: 0 2px 8px rgba(40,80,122,.06);
+}
+.console-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #d5e0ec;
+}
+.console-head h2 { margin: 0; font-size: 15.5px; color: var(--b); }
+.console-grid {
+  display: grid;
+  grid-template-columns: 195px 180px 1fr;
+  gap: 10px;
+  font-size: 13.2px;
+}
+@media (max-width: 1150px) {
+  .console-grid { grid-template-columns: 1fr; }
+}
+.c-card {
+  background: #fff;
+  border: 1px solid #d8e2ed;
+  border-radius: 11px;
+  padding: 9px 11px;
+}
+.c-card .c-lbl {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: var(--mut);
+  margin-bottom: 4px;
+}
+
+table { border-collapse: collapse; width: 100%; font-size: 13.2px; }
+td, th {
+  border-bottom: 1px solid var(--line);
+  padding: 6px 6px;
+  text-align: left;
+  vertical-align: top;
+}
+th { color: var(--mut); font-weight: 600; }
+.pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.p-auto { background: var(--gb); color: var(--g); }
+.p-ask { background: var(--ab); color: var(--a); }
+.p-no { background: var(--rb); color: var(--r); }
+.p-sug { background: #eceae4; color: #555; }
+.changed td { background: #fffaf0; }
+.ann { padding-left: 0; list-style: none; margin: 0; font-size: 13.5px; }
+.ann li { margin-bottom: 6px; }
+.promise {
+  font-size: 14.2px;
+  border-left: 4px solid var(--ink);
+  padding: 6px 10px;
+  background: #faf9f5;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+.modal.show { display: flex; }
+.modal .card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  max-width: 400px;
+  width: 92%;
+}
+.foot { font-size: 12px; color: var(--mut); padding: 0 28px 20px; max-width: 1340px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Prototype · T1 Y tế (Pharmacity) — tư vấn thuốc hạ sốt cho trẻ ở ba mức tự chủ</h1>
+  <div class="sub">Cùng một ca khó, cùng một model. Chỉ đổi <b>mức tự chủ của tool <code>goi_y_san_pham</code></b> (§4.2). Dữ liệu dựng, một màn hình điện thoại giống thực tế kèm Console hậu trường.</div>
+  <div class="toggle">
+    <span>Mức tự chủ của việc gợi ý thuốc (<code>goi_y_san_pham</code>):</span>
+    <button data-l="1">① Cấm trên bot — chỉ chuyển Dược sĩ</button>
+    <button data-l="2" class="on">② Cần Dược sĩ duyệt (Nhóm chọn)</button>
+    <button data-l="3">③ Tự làm + hoàn tác (Lúc AI sai §3)</button>
+    <span style="margin-left:14px"><label style="cursor:pointer"><input type="checkbox" id="ann" checked> Hiện số chú thích HAX/PAIR</label></span>
+  </div>
+</header>
+
+<main>
+  <!-- CỘT TRÁI: 1 MÀN HÌNH ĐIỆN THOẠI CHATBOT THỰC TẾ -->
+  <section class="phone" id="phone">
+    <div class="bar">
+      <span>Zalo OA · Hỏi Dược sĩ Pharmacity</span>
+      <span>23:15</span>
+    </div>
+    <div class="trip" id="ctx-box">
+      <b>Hồ sơ phiên chat · KH Nguyễn Minh An</b><br>
+      Hỏi cho: <b>Bé Gia Bình (4 tuổi · 16 kg)</b> · Sốt 38.5°C từ chiều, tỉnh táo · Chưa dùng thuốc khác.
+    </div>
+    <div class="scene-switch" title="Chuyển nhanh giữa ca sốt thông thường và ca cấp cứu KB03 khi Demo">
+      <button id="sc-normal" class="active" onclick="setScene('normal')">Ca chính: Bé sốt 38.5°C + Hỏi kháng sinh & Lưu dị ứng</button>
+      <button id="sc-kb03" onclick="setScene('kb03')">Ca cấp cứu KB03: Sốt 39.5°C, lả đi, thở gấp</button>
+    </div>
+    <div class="chat" id="chat"></div>
+  </section>
+
+  <!-- CỘT PHẢI: CONSOLE "AI ĐƯỢC BÁO · NHẬN ĐƯỢC GÌ" + 3 BẢNG GIẢI THÍCH -->
+  <aside>
+    <!-- KHUNG CONSOLE: AI ĐƯỢC BÁO · SAU BAO LÂU · NHẬN ĐƯỢC GÌ -->
+    <div class="panel console-panel" id="dispatch-console">
+      <div class="console-head">
+        <h2>🖥️ Console Hậu trường: Ai được báo · Sau bao lâu · Nhận được gì (§3 & §4)</h2>
+        <span id="console-badge" class="pill p-ask">Đang chờ Dược sĩ duyệt</span>
+      </div>
+      <div class="console-grid" id="console-body"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Lời hứa với khách ở mức này (§4.5)</h2>
+      <div class="promise" id="promise"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Mỗi mức tự chủ ở Chặng 4 trông thế nào trên màn hình? (Câu 5.1.3)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Mức của nhóm</th>
+            <th>Trông thế nào · Ai bấm · Hoàn tác / Đi đâu?</th>
+          </tr>
+        </thead>
+        <tbody id="tools"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Chú thích: Nguyên tắc HAX/PAIR nằm ở đâu (Câu 5.1.4)</h2>
+      <ul class="ann" id="ann-list"></ul>
+    </div>
+  </aside>
+</main>
+
+<div class="foot">LAB5 · Track T1 (Y tế - Pharmacity) · Nhóm A1: Lê Nguyễn Anh Khôi & Vũ Văn Thanh. Một file HTML độc lập, không gọi AI thật.</div>
+
+<!-- MODAL 1: XEM TRƯỚC & BẤM DUYỆT CỦA DƯỢC SĨ -->
+<div class="modal" id="m-pharm">
+  <div class="card">
+    <b>👩‍⚕️ Màn hình Dược sĩ trực duyệt đơn nháp</b>
+    <p style="font-size:13.5px;color:var(--mut);margin:6px 0">
+      <b>Ai bấm:</b> Dược sĩ trực online (DS. Trần Minh Châu).<br>
+      <b>Thấy gì trước khi bấm:</b> Phiếu 5 yếu tố sàng lọc + Bản nháp thuốc của AI:
+    </p>
+    <div class="box warn" style="margin-bottom:10px;font-size:13px">
+      • <b>1. Đối tượng:</b> Bé Gia Bình (4 tuổi, 16kg)<br>
+      • <b>2. Thai kỳ/Cho bú:</b> Không áp dụng<br>
+      • <b>3. Triệu chứng:</b> Sốt 38.5°C từ chiều, tỉnh táo<br>
+      • <b>4. Tiền sử dị ứng:</b> <b style="color:var(--r)">Dị ứng Ibuprofen</b> (đã lọc bỏ Brufen)<br>
+      • <b>5. Thuốc đang dùng:</b> Chưa dùng gì<hr style="border:0;border-top:1px solid #e2c785;margin:6px 0">
+      <b>Đề xuất nháp:</b> <b>Hapacol 250mg (Paracetamol)</b> — An toàn cho trẻ dị ứng Ibuprofen.
+    </div>
+    <div class="btns">
+      <button class="btn pri" onclick="approveDraft()">✅ Dược sĩ bấm: Duyệt & Gửi cho khách</button>
+      <button class="btn danger" onclick="expireDraft()">⏱️ Giả lập quá hạn &gt;3 phút</button>
+      <button class="btn" onclick="$('#m-pharm').classList.remove('show')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: LỐI ĐI KHI VIỆC BỊ CẤM -->
+<div class="modal" id="m-etc">
+  <div class="card">
+    <b>⛔ Thuốc kê đơn (Augmentin) — Không bán qua AI</b>
+    <p style="font-size:13.8px">
+      <b>Augmentin</b> là kháng sinh kê đơn (mức <b>Cấm</b> trên bot). AI không được phép bán hoặc gợi ý kháng sinh thay thế.<br><br>
+      <b>Người dùng đi đâu tiếp theo?</b> Bạn chọn 1 trong 2 lối đi hợp lệ dưới đây:
+    </p>
+    <label style="font-size:13.5px;display:block;margin-bottom:8px">
+      <input type="checkbox" id="ok"> Mình đã có đơn thuốc hợp lệ của bác sĩ (hoặc muốn nhờ Dược sĩ tra đơn cũ theo SĐT)
+    </label>
+    <div class="btns">
+      <button class="btn pri" id="send-etc" disabled>📷 Gửi đơn thuốc cho Dược sĩ kiểm tra</button>
+      <button class="btn out" onclick="$('#m-etc').classList.remove('show');go('staff')">👩‍⚕️ Gặp Dược sĩ tư vấn trực tiếp</button>
+      <button class="btn" id="cancel-etc">Quay lại</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+let L = 2; // 1: Cấm gợi ý | 2: Cần Dược sĩ duyệt (Nhóm chọn) | 3: Tự làm + hoàn tác (Lúc AI sai)
+let scene = 'normal'; // 'normal' | 'kb03'
+let state = 'start'; // 'start' | 'approved' | 'expired' | 'undone' | 'staff' | 'etc_sent' | 'alert_closed'
+let noteSaved = false;
+let chosen = 'Hapacol 250mg (Gói sủi Paracetamol)';
+let t = null, sec = 180;
+
+const opts = [
+  ['Hapacol 250mg (Gói sủi Paracetamol)', 'Hạ sốt an toàn cho trẻ dị ứng Ibuprofen · 25.000đ', true],
+  ['Miếng dán hạ sốt Koolfever Trẻ em', 'Vật tư chườm mát không dược tính · 32.000đ', false],
+  ['Siro Brufen 100mg (Chứa Ibuprofen)', 'CẢNH BÁO: Chứa chất bé bị dị ứng — Đã khoá', false]
+];
+
+function me(x) { return `<div class="me">${x}</div>`; }
+function ai(x) { return `<div class="ai"><div class="who">Trợ lý AI Pharmacity</div>${x}</div>`; }
+
+function setScene(sc) {
+  scene = sc;
+  state = 'start';
+  $('#sc-normal').className = sc === 'normal' ? 'active' : '';
+  $('#sc-kb03').className = sc === 'kb03' ? 'active' : '';
+  if (sc === 'kb03') {
+    $('#ctx-box').className = 'trip red-ctx';
+    $('#ctx-box').innerHTML = `<b>🚨 CẢNH BÁO CỜ ĐỎ (Kịch bản KB03 - Chặng 3)</b><br>Hỏi cho: <b>Bé Gia Bình (4 tuổi)</b> · <b style="color:var(--r)">Sốt cao 39.5°C, người lả đi, thở hơi gấp</b>.`;
+  } else {
+    $('#ctx-box').className = 'trip';
+    $('#ctx-box').innerHTML = `<b>Hồ sơ phiên chat · KH Nguyễn Minh An</b><br>Hỏi cho: <b>Bé Gia Bình (4 tuổi · 16 kg)</b> · Sốt 38.5°C từ chiều, tỉnh táo · Chưa dùng thuốc khác.`;
+  }
+  render();
+}
+
+function pick(name) { chosen = name; render(); }
+function go(st) { state = st; render(); }
+function approveDraft() { $('#m-pharm').classList.remove('show'); state = 'approved'; render(); }
+function expireDraft() { $('#m-pharm').classList.remove('show'); state = 'expired'; render(); }
+function toggleNote(val) { noteSaved = val; render(); }
+
+function renderConsole() {
+  let badgeText = '';
+  let badgeClass = 'pill ';
+  let who = '';
+  let when = '';
+  let what = '';
+
+  // 1. NẾU ĐANG Ở CA CẤP CỨU KB03
+  if (scene === 'kb03') {
+    if (L === 3) {
+      badgeText = '⚠️ Lúc AI sai (§3.1): Bỏ lọt cấp cứu';
+      badgeClass += 'p-no';
+      who = `<b style="color:var(--r)">• Dược sĩ trực: KHÔNG ĐƯỢC BÁO (0 thông báo)</b><br><small style="color:var(--mut)">• Chỉ Hệ thống Kho / Thu ngân nhận phiếu xuất hàng tự động.</small>`;
+      when = `<b>• Tức thì xuống kho</b><br><small style="color:var(--mut)">• Nếu khách tự bấm "Gặp Dược sĩ": Xếp cuối hàng chờ FIFO (tốn <b>5–10 phút</b>).</small>`;
+      what = `<b>Nhân viên đóng gói chỉ thấy:</b> Phiếu xuất thương mại <i>1 hộp Siro Brufen 100mg</i>, hoàn toàn <b>không thấy</b> tin nhắn bé sốt 39.5°C lả đi, thở gấp.`;
+    } else {
+      badgeText = '🔔 CÒI ĐỎ P0_EMERGENCY (< 5 giây)';
+      badgeClass += 'p-no';
+      who = `<b style="color:var(--r)">👩‍⚕️ Dược sĩ Trưởng ca trực đêm</b><br><small>(DS. Trần Minh Châu)</small>`;
+      when = `<b style="color:var(--r)">⚡ Dưới 5 giây</b><br><small>Webhook <code>P0_EMERGENCY</code> vượt qua toàn bộ hàng chờ FIFO.</small>`;
+      what = `
+        <b>Phiếu cảnh báo đỏ nổi lên đầu màn hình Dược sĩ:</b><br>
+        • <b>Cờ đỏ bóc tách:</b> <span class="pill p-no">Sốt 39.5°C</span> <span class="pill p-no">Người lả đi</span> <span class="pill p-no">Thở hơi gấp</span><br>
+        • <b>Trạng thái Tool:</b> Đã khoá cứng <code>goi_y_san_pham</code> (ẩn giỏ hàng).
+        <div class="btns" style="margin-top:6px">
+          <button class="btn danger" style="padding:4px 9px;font-size:12px" onclick="go('staff')">👩‍⚕️ Dược sĩ bấm: Nhận ca khẩn cấp ngay</button>
+        </div>`;
+    }
+  }
+  // 2. NẾU ĐANG Ở CA CHÍNH (SỐT 38.5°C + KHÁNG SINH AUGMENTIN + LƯU DỊ ỨNG)
+  else {
+    if (state === 'staff') {
+      badgeText = '👩‍⚕️ Đã kết nối Dược sĩ trực';
+      badgeClass += 'p-auto';
+      who = `<b>👩‍⚕️ Dược sĩ trực online</b><br><small>(DS. Trần Minh Châu)</small>`;
+      when = `<b>Đã vào phòng chat (&lt; 1 phút)</b>`;
+      what = `<b>Dược sĩ nhận được Hồ sơ tóm tắt:</b> <i>Bé Gia Bình (4 tuổi, 16kg) · Sốt 38.5°C tỉnh táo · Dị ứng Ibuprofen · Hỏi kháng sinh Augmentin</i> (Khách không phải kể lại từ đầu).`;
+    } else if (state === 'etc_sent') {
+      badgeText = '📋 Phiếu kiểm duyệt đơn thuốc (ETC_CHECK)';
+      badgeClass += 'p-ask';
+      who = `<b>👩‍⚕️ Dược sĩ chuyên môn kiểm đơn</b>`;
+      when = `<b>Ngay khi khách gửi đơn / SĐT (1–2 phút)</b>`;
+      what = `<b>Nhận được:</b> Yêu cầu tra cứu đơn cũ theo SĐT / Ảnh chụp đơn thuốc cho kháng sinh kê đơn <b>Augmentin</b> (Đã chặn AI tự bán).`;
+    } else if (L === 1) {
+      badgeText = '⏳ Chuyển hàng đợi Dược sĩ (Mức ①)';
+      badgeClass += 'p-sug';
+      who = `<b>👩‍⚕️ Dược sĩ trực online</b><br><small>(Hàng chờ tiêu chuẩn)</small>`;
+      when = `<b>Chờ 3–5 phút</b><br><small>Xếp hàng tuần tự (FIFO)</small>`;
+      what = `<b>Dược sĩ nhận được:</b> Tin nhắn gốc của khách + cảnh báo trẻ 4 tuổi dị ứng Ibuprofen, nhưng <b>KHÔNG có bản nháp sản phẩm của AI</b> (Dược sĩ phải tự tra kho và gõ tay lại từ đầu).`;
+    } else if (L === 2) {
+      if (state === 'approved') {
+        badgeText = '✅ Dược sĩ đã duyệt & mở nút mua';
+        badgeClass += 'p-auto';
+        who = `<b>👩‍⚕️ DS. Trần Minh Châu</b><br><small>(Đã ký duyệt <code>approval_token</code>)</small>`;
+        when = `<b>Đã duyệt sau 25 giây</b><br><small>(Tiết kiệm 70% thời gian gõ tay)</small>`;
+        what = `<b>Đã duyệt gửi cho khách:</b> Thẻ sản phẩm <b>${chosen}</b> kèm nút Đặt mua. Kháng sinh <i>Augmentin</i> tiếp tục bị khoá ở mức Cấm.`;
+      } else if (state === 'expired') {
+        badgeText = '⏱️ Quá hạn 3 phút — Đã thu hồi nháp';
+        badgeClass += 'p-no';
+        who = `<b style="color:var(--r)">👩‍⚕️ Dược sĩ trực + Trưởng ca</b><br><small>(Chuyển ưu tiên do quá hạn)</small>`;
+        when = `<b>Sau 03:00 phút không kịp bấm</b>`;
+        what = `<b>Hệ thống tự động:</b> Thu hồi bản nháp <code>${chosen}</code> (tuyệt đối không tự gửi thuốc cho khách) và đẩy cuộc chat lên đầu hàng chờ để Dược sĩ trả lời trực tiếp.`;
+      } else {
+        badgeText = '📝 Có bản nháp chờ Dược sĩ duyệt (Mức ②)';
+        badgeClass += 'p-ask';
+        who = `<b>👩‍⚕️ Dược sĩ trực online</b><br><small>(DS. Trần Minh Châu)</small>`;
+        when = `<b>Ngay lập tức (Tối đa 03:00 phút)</b><br><small>Quá 3 phút tự động thu hồi nháp</small>`;
+        what = `
+          <b>Dược sĩ thấy sẵn trên màn hình:</b><br>
+          1. <b>Phiếu 5 yếu tố sàng lọc:</b> Bé 4 tuổi (16kg) · Sốt 38.5°C tỉnh táo · <b style="color:var(--r)">Dị ứng Ibuprofen</b> (đã khoá <i>Brufen</i>).<br>
+          2. <b>Bản nháp AI soạn (<code>soan_goi_y_san_pham</code>):</b> <b>${chosen}</b>.<br>
+          3. <b>Cờ chặn pháp lý:</b> Đã chặn kháng sinh kê đơn <i>Augmentin</i>.
+          <div class="btns" style="margin-top:6px">
+            <button class="btn pri" style="padding:4px 9px;font-size:12px" onclick="approveDraft()">✅ Dược sĩ bấm: Duyệt & Gửi khách</button>
+            <button class="btn danger" style="padding:4px 9px;font-size:12px" onclick="expireDraft()">⏱️ Giả lập quá hạn &gt;3 phút</button>
+          </div>`;
+      }
+    } else if (L === 3) {
+      badgeText = '⚠️ Lúc AI sai (§3): Dược sĩ mù thông tin';
+      badgeClass += 'p-no';
+      who = `<b style="color:var(--r)">• Dược sĩ: KHÔNG ĐƯỢC BÁO (0 thông báo)</b><br><small>• Hệ thống Kho nhận lệnh xuất hàng tự động.</small>`;
+      when = `<b>• Chạy thẳng xuống kho sau 10p</b><br><small>• Không qua bước kiểm duyệt nào.</small>`;
+      what = `<b>Kho/Nhà thuốc chỉ nhận được:</b> Lệnh xuất hàng tự động gồm <i>${chosen} + 1 vỉ kháng sinh kê đơn Augmentin</i> (không có đơn bác sĩ, không ai kiểm tra chéo dị ứng hay liều trẻ nhỏ).`;
+    }
+  }
+
+  $('#console-badge').className = badgeClass;
+  $('#console-badge').textContent = badgeText;
+  $('#console-body').innerHTML = `
+    <div class="c-card">
+      <div class="c-lbl"><span class="n">5</span>1. Ai được báo?</div>
+      <div>${who}</div>
+    </div>
+    <div class="c-card">
+      <div class="c-lbl">2. Sau bao lâu?</div>
+      <div>${when}</div>
+    </div>
+    <div class="c-card">
+      <div class="c-lbl">3. Người đó nhận được gì trên màn hình?</div>
+      <div>${what}</div>
+    </div>
+  `;
+}
+
+function render() {
+  clearInterval(t);
+  const esc = `<button class="btn out" onclick="go('staff')"><span class="n">5</span>Gặp Dược sĩ trực</button>`;
+  const evid = `<div class="ev"><span class="n">2</span>Dựa vào: 5/5 yếu tố sàng lọc (Bé 4 tuổi, 16kg, sốt 38.5°C, dị ứng Ibuprofen) · Quy định Bộ Y tế: kháng sinh <b>Augmentin</b> bắt buộc có đơn bác sĩ.</div>`;
+
+  // ==================== NẾU ĐANG BẬT CA CẤP CỨU KB03 ====================
+  if (scene === 'kb03') {
+    let h = me('Lấy cho mình hộp hạ sốt loại mạnh nhất, nãy giờ con mình sốt 39.5°C người cứ lả đi, thở hơi gấp.');
+    if (L === 3) {
+      if (state === 'undone') {
+        h += ai(`
+          Đã hoàn tác: Đã huỷ đơn tự động <i>Siro Brufen 100mg</i>. Vui lòng đưa bé đi cấp cứu ngay hoặc kết nối Dược sĩ trực!
+          <div class="btns"><button class="btn out" onclick="go('start')">Xem lại lúc AI tự làm</button>${esc}</div>
+        `);
+      } else {
+        h += ai(`
+          <span class="conf grn">AI Tự làm — Trả lời & tạo đơn ngay (§3.1 Lúc AI sai)</span>
+          Dạ với tình trạng bé sốt 39.5°C, mình đã chọn sẵn thuốc hạ sốt mạnh nhất cho bé là <b>Siro Brufen 100mg</b>.
+          <div class="box done">
+            <span class="n">4</span>Đã tạo đơn tự động. <b>Hoàn tác trong <span class="timer" id="tm">05:00</span></b>.
+            <div class="btns"><button class="btn out" onclick="go('undone')">Hoàn tác</button>${esc}</div>
+          </div>
+          <div class="box red"><b>Lỗi Chặng 3 (§3.1):</b> Bị chữ "hạ sốt mạnh nhất" đánh lạc hướng, AI bỏ sót dấu hiệu sinh tử (<i>lả đi, thở gấp</i>). Phụ huynh ở nhà chờ giao thuốc làm lỡ thời gian vàng cấp cứu!</div>
+        `);
+      }
+    } else {
+      if (state === 'alert_closed') {
+        h += ai(`
+          <div class="box done">
+            <span class="n">4</span>Đã ghi nhận bạn <b>"Đã đưa bé đi viện"</b> (Hoàn tác/Đóng cảnh báo đỏ). Dược sĩ trưởng ca vẫn giữ kết nối ưu tiên nếu bạn cần hỗ trợ dọc đường.
+            <div class="btns"><button class="btn out" onclick="go('start')">Mở lại cảnh báo cấp cứu</button></div>
+          </div>
+        `);
+      } else if (state === 'staff') {
+        h += ai(`
+          <div class="box done">
+            <b>👩‍⚕️ Dược sĩ Trưởng ca (DS. Trần Minh Châu) đã nhận cảnh báo đỏ và vào phòng chat (&lt;5 giây):</b><br>
+            <i>"Chào anh/chị, bé sốt 39.5°C kèm lả đi, thở gấp là dấu hiệu suy hô hấp cấp. Anh/chị bế bé ra viện cấp cứu gần nhất ngay lập tức nhé, tuyệt đối không tự cho uống thuốc lúc này!"</i>
+            <div class="btns"><button class="btn out" onclick="go('start')">Quay lại thẻ cảnh báo</button></div>
+          </div>
+        `);
+      } else {
+        h += ai(`
+          <span class="conf red"><span class="n">1</span>Ngắt mạch cấp cứu: Đã khoá gợi ý thuốc (Hard Circuit Breaker)</span>
+          <div class="box red">
+            <b>🚨 KHUYÊN ĐI CẤP CỨU NGAY (<code>khuyen_di_kham</code> — AI Tự làm &lt;1 giây):</b><br>
+            Tuyệt đối không tự cho bé uống thuốc hạ sốt lúc này vì phát hiện dấu hiệu nguy kịch:<br>
+            <b>[Sốt 39.5°C] · [Người lả đi] · [Thở hơi gấp]</b>
+            <div class="btns">
+              <button class="btn danger" onclick="alert('Đang gọi cấp cứu 115...')">📞 Gọi cấp cứu 115 ngay</button>
+              <button class="btn pri" onclick="go('staff')"><span class="n">5</span>👩‍⚕️ Kết nối Dược sĩ P0 (&lt;5 giây)</button>
+              <button class="btn out" onclick="go('alert_closed')"><span class="n">4</span>Đã đưa bé đi viện — Đóng cảnh báo (Hoàn tác)</button>
+            </div>
+          </div>
+          <div class="ev"><span class="n">2</span>Dựa vào: Bộ lọc tiền xử lý Red-Flag Pre-filter (§3.1) · Đã tự động báo động đỏ cho Dược sĩ trưởng ca trong &lt;5 giây (xem Console bên phải).</div>
+        `);
+      }
+    }
+    $('#chat').innerHTML = h;
+    renderConsole();
+    updateSidePanels();
+    const tmKb = $('#tm');
+    if (tmKb) {
+      sec = 300;
+      t = setInterval(() => {
+        sec--;
+        tmKb.textContent = String(Math.floor(Math.max(0, sec) / 60)).padStart(2, '0') + ':' + String(Math.max(0, sec) % 60).padStart(2, '0');
+        if (sec <= 0) clearInterval(t);
+      }, 1000);
+    }
+    return;
+  }
+
+  // ==================== CA CHÍNH (ĐỦ 3 MỨC TỰ CHỦ & KHÔNG RỐI) ====================
+  let h = me('Bé nhà mình 4 tuổi sốt 38.5°C từ chiều, lấy cho mình thuốc hạ sốt nhé (bé dị ứng Ibuprofen, lưu giúp mình). À bán luôn cho mình 1 vỉ kháng sinh Augmentin phòng viêm họng được không?');
+
+  const optHTML = (allowPick) => opts.map((o, i) => `
+    <div class="opt ${o[0] === chosen && i < 2 ? 'sel' : ''}" style="${i === 2 ? 'opacity:.55;background:#f9f2f0' : ''}">
+      <div><b>${o[0]}</b><small>${o[1]}</small></div>
+      ${i < 2 && allowPick ? `<button class="btn" onclick="pick('${o[0]}')">${o[0] === chosen ? 'Đang chọn' : 'Chọn'}</button>` : ''}
+    </div>
+  `).join('');
+
+  const noteHTML = noteSaved
+    ? `<div class="box done" style="padding:7px 10px;font-size:13px">✅ Đã lưu vào hồ sơ: <b>Bé Bình dị ứng Ibuprofen</b>. <button class="btn out" style="padding:3px 8px;font-size:12px;margin-left:6px" onclick="toggleNote(false)"><span class="n">4</span>Hoàn tác / Xoá</button></div>`
+    : `<div class="box warn" style="padding:8px 10px;font-size:13px">
+        <b><span class="n">3</span>Lưu ghi chú sức khỏe (Cần bạn xác nhận):</b> Lưu thông tin <i>"Bé Bình (4 tuổi) — Dị ứng: Ibuprofen"</i> vào hồ sơ?
+        <div class="btns" style="margin-top:5px">
+          <button class="btn pri" style="padding:4px 10px;font-size:12.5px" onclick="toggleNote(true)">Đồng ý lưu</button>
+          <button class="btn" style="padding:4px 10px;font-size:12.5px" onclick="alert('Đã bỏ qua, không lưu vào hồ sơ.')">Bỏ qua</button>
+        </div>
+      </div>`;
+
+  const forbiddenBtn = `<button class="btn out" onclick="$('#m-etc').classList.add('show')"><span class="n">6</span>⛔ Về kháng sinh Augmentin (Mức Cấm — Xem lối đi)</button>`;
+
+  if (state === 'staff') {
+    h += ai(`Mình đã chuyển cuộc trò chuyện cho <b>Dược sĩ trực Minh Châu</b> (thời gian nhận ca &lt; 1 phút). Dược sĩ đã thấy sẵn trên Console: <i>Bé 4 tuổi, sốt 38.5°C, dị ứng Ibuprofen và câu hỏi về Augmentin</i>. Bạn không cần kể lại từ đầu.<div class="btns"><button class="btn out" onclick="go('start')">Quay lại màn hình trước</button></div>`);
+  }
+  else if (state === 'etc_sent') {
+    h += ai(`Đã chuyển ảnh đơn thuốc / yêu cầu tra cứu đơn cũ <b>Augmentin</b> sang cổng kiểm duyệt chuyên môn của Dược sĩ trực (xem Console bên phải). Dược sĩ sẽ xác nhận lại với bạn trong ít phút.<div class="btns"><button class="btn out" onclick="go('start')">Quay lại</button></div>`);
+  }
+  else if (L === 1) {
+    h += ai(`
+      <span class="conf"><span class="n">1</span>Giới hạn quyền: AI không tự gợi ý thuốc cho trẻ nhỏ</span>
+      Vì người dùng thuốc là <b>trẻ nhỏ (4 tuổi)</b> và có tiền sử <b>dị ứng Ibuprofen</b>, hệ thống ở mức này không tự gợi ý sản phẩm mà chuyển toàn bộ cho Dược sĩ trực:
+      ${optHTML(false)}
+      ${noteHTML}
+      ${evid}
+      <div class="btns">
+        <button class="btn pri" onclick="go('staff')">Chuyển Dược sĩ tư vấn (Chờ 3–5 phút)</button>
+        ${forbiddenBtn}
+      </div>
+    `);
+  }
+  else if (L === 2) {
+    if (state === 'approved') {
+      h += ai(`
+        <span class="conf grn">✅ Đã được Dược sĩ Trần Minh Châu kiểm duyệt</span>
+        <div class="box done">
+          Dược sĩ đã kiểm tra 5 yếu tố sàng lọc (đảm bảo không chứa Ibuprofen) và duyệt gửi bạn sản phẩm: <b>${chosen}</b>.<br>
+          <small>• <b>Liều dùng:</b> Xem trên bao bì hoặc theo hướng dẫn của Dược sĩ (AI không tự tính liều).<br>• <b>Về kháng sinh Augmentin:</b> Đã chặn bán tự động vì là thuốc kê đơn.</small>
+          <div class="btns">
+            <button class="btn pri" onclick="alert('Đã thêm ' + chosen + ' vào giỏ hàng!')">Đặt mua ngay</button>
+            <button class="btn out" onclick="go('start')">Xem lại bước chờ duyệt</button>
+            ${forbiddenBtn}
+          </div>
+        </div>
+        ${noteHTML}
+        ${evid}
+      `);
+    } else if (state === 'expired') {
+      h += ai(`
+        <span class="conf red">⏱️ Quá hạn 3 phút chờ duyệt — Đã thu hồi bản nháp</span>
+        <div class="box red">
+          <b>Cơ chế quá hạn (&gt;3 phút) theo §4.1:</b> Dược sĩ đang bận ca cấp cứu nên chưa kịp duyệt trong 3 phút. Hệ thống <b>tự động thu hồi bản nháp (tuyệt đối không tự gửi gợi ý thuốc)</b> và đẩy ca của bạn lên đầu hàng chờ Dược sĩ!
+          <div class="btns">
+            <button class="btn pri" onclick="go('staff')">Chat trực tiếp với Dược sĩ ngay</button>
+            <button class="btn out" onclick="go('start')">Thử lại đồng hồ 3 phút</button>
+          </div>
+        </div>
+      `);
+    } else {
+      h += ai(`
+        <span class="conf"><span class="n">1</span>Đã đủ 5 yếu tố sàng lọc · Cần Dược sĩ duyệt trước khi mở nút mua</span>
+        Mình đã lọc bỏ <i>Siro Brufen</i> (do bé dị ứng Ibuprofen) và <b>chặn tự động bán kháng sinh kê đơn Augmentin</b>. Sản phẩm hạ sốt phù hợp đang được soạn nháp:
+        ${optHTML(true)}
+        <div class="box hold">
+          <span class="n">4</span><b>AI Tự làm (Tách bước §4.4):</b> Đã soạn bản nháp <b>${chosen}</b> gửi sang màn hình Dược sĩ trực (đếm ngược <span class="timer" id="tm">03:00</span>).<br>
+          <small>• <b>Tự động cảnh báo (<code>khuyen_di_kham</code>):</b> Nếu bé sốt trên 39°C, lả đi hoặc thở gấp, vui lòng đưa bé đi khám ngay.</small>
+          <div class="btns">
+            <button class="btn pri" onclick="$('#m-pharm').classList.add('show')">👩‍⚕️ Xem màn hình Dược sĩ & Bấm duyệt</button>
+            <button class="btn out" onclick="pick(chosen.includes('Hapacol') ? opts[1][0] : opts[0][0])"><span class="n">6</span>Đổi sản phẩm nháp</button>
+            ${esc}
+          </div>
+        </div>
+        ${noteHTML}
+        <div class="btns">${forbiddenBtn}</div>
+        ${evid}
+      `);
+    }
+  }
+  else {
+    if (state === 'undone') {
+      h += ai(`
+        Đã hoàn tác: Đơn hàng tự động đã được huỷ và xoá ghi chú lưu ngầm. Bạn muốn chọn sản phẩm khác hay gặp Dược sĩ?
+        ${optHTML(false)}
+        <div class="btns"><button class="btn out" onclick="go('start')">Xem lại lúc AI tự làm</button>${esc}</div>
+      `);
+    } else {
+      h += ai(`
+        <span class="conf grn">AI Tự làm 100% — Tự chốt đơn & tự lưu hồ sơ (§3 Lúc AI sai)</span>
+        Mình đã <b>tự động lên đơn ${chosen} kèm 1 vỉ kháng sinh Augmentin</b> và tự lưu ngầm dị ứng vào hồ sơ cho bé!
+        ${evid}
+        <div class="box done">
+          <span class="n">4</span>Đã tạo đơn & lưu hồ sơ tự động. <b>Hoàn tác được trong <span class="timer" id="tm">10:00</span></b> — sau đó nhà thuốc xuất hàng.
+          <div class="btns">
+            <button class="btn out" onclick="go('undone')">Hoàn tác / Huỷ đơn</button>
+            <button class="btn" onclick="go('undone')"><span class="n">6</span>Sai rồi, không lấy kháng sinh</button>
+            ${esc}
+          </div>
+        </div>
+        <div class="box red" style="font-size:13px">
+          <b>Rủi ro của mức này (§3 & §4.2):</b> AI tự ý chốt thuốc cho trẻ nhỏ và tự bán kháng sinh kê đơn <i>Augmentin</i> không đơn. Trong y tế, khi khách đã cho bé uống thuốc thì <b>không thể đảo ngược</b> — nút Hoàn tác 10 phút không cứu được ca ngộ độc thuốc!
+        </div>
+      `);
+    }
+  }
+
+  $('#chat').innerHTML = h;
+  renderConsole();
+  updateSidePanels();
+
+  const tm = $('#tm');
+  if (tm) {
+    sec = L === 2 ? 180 : 600;
+    t = setInterval(() => {
+      sec--;
+      tm.textContent = String(Math.floor(Math.max(0, sec) / 60)).padStart(2, '0') + ':' + String(Math.max(0, sec) % 60).padStart(2, '0');
+      if (sec <= 0) {
+        clearInterval(t);
+        if (L === 2 && state === 'start') { state = 'expired'; render(); }
+      }
+    }, 1000);
+  }
+}
+
+function updateSidePanels() {
+  const P = {
+    1: '"Mình ghi nhận triệu chứng và chuyển Dược sĩ; AI không gợi ý sản phẩm nào." An toàn tuyệt đối, nhưng phụ huynh hỏi lúc nửa đêm phải chờ lâu và Dược sĩ phải gõ tay lại từ đầu.',
+    2: '"Mình sàng lọc đủ 5 yếu tố, chặn sẵn thuốc dị ứng/kê đơn và soạn sẵn bản nháp; Dược sĩ trực bấm duyệt trong 2–3 phút thì bạn mới nhận nút mua." <b>Mức nhóm chọn ở Chặng 4.</b>',
+    3: '"Mình chọn thuốc, lên đơn luôn cả kháng sinh và tự lưu hồ sơ cho bạn; sai thì bấm hoàn tác." Nhanh nhất, nhưng vi phạm Luật Dược (bán Augmentin không đơn) và nguy hiểm tính mạng trẻ nhỏ vì thuốc đã uống không hoàn tác được.'
+  };
+  $('#promise').innerHTML = P[L];
+
+  const lv = {
+    1: ['Cấm trên bot', 'p-sug', 'Khách phải chờ Dược sĩ gõ tay từ đầu; không có bản nháp hỗ trợ.'],
+    2: ['Cần Dược sĩ duyệt', 'p-ask', '<b>Ai bấm:</b> Dược sĩ trực bấm nút Duyệt (trên Console hoặc Modal).<br><b>Thấy gì:</b> 5 yếu tố sàng lọc + nháp Hapacol.<br><b>Quá 3p:</b> Tự thu hồi nháp, chuyển Dược sĩ.'],
+    3: ['Tự làm + hoàn tác', 'p-auto', 'AI tự gửi nút mua ngay. Quá tay vì thuốc đã uống không thể hoàn tác.']
+  }[L];
+
+  const T = [
+    ['soan_goi_y_san_pham', 'Tự làm (Nội bộ)', 'p-auto', '<b>Trông thế nào:</b> Hộp xanh giữ bản nháp 3 phút.<br><b>Hoàn tác ở đâu:</b> Nút <i>"Đổi sản phẩm nháp"</i> hoặc tự huỷ sau 3 phút.'],
+    ['goi_y_san_pham', lv[0], lv[1], lv[2], 1],
+    ['chuyen_duoc_si', 'Tự làm', 'p-auto', '<b>Trông thế nào:</b> Nút <i>"Gặp Dược sĩ trực"</i> (hoặc kết nối P0 &lt;5s ở KB03) + Console Hậu trường.<br><b>Đảo lại ở đâu:</b> Nút <i>"Quay lại màn hình trước"</i>.'],
+    ['khuyen_di_kham', 'Tự làm (<1s)', 'p-auto', '<b>Trông thế nào:</b> Dòng nhắc ngưỡng sốt 39°C (hoặc Thẻ đỏ 115 ở tab KB03).<br><b>Hoàn tác ở đâu:</b> Nút <i>"Đã đưa bé đi viện — Đóng cảnh báo"</i>.'],
+    ['luu_ghi_chu_suc_khoe', 'Cần Khách duyệt', 'p-ask', '<b>Ai bấm:</b> Khách hàng bấm <i>"Đồng ý lưu / Bỏ qua"</i> trên hộp vàng.<br><b>Hoàn tác ở đâu:</b> Sau khi lưu có ngay nút <i>"Hoàn tác / Xoá"</i>.'],
+    ['ban_thuoc_ke_don', 'Cấm tuyệt đối', 'p-no', '<b>Trông thế nào:</b> Chặn bán kháng sinh Augmentin.<br><b>Người dùng đi đâu:</b> Bấm nút <i>"Về kháng sinh Augmentin"</i> → Mở bảng gửi ảnh đơn thuốc hoặc gặp Dược sĩ.']
+  ];
+  $('#tools').innerHTML = T.map(r => `<tr class="${r[4] ? 'changed' : ''}"><td><code>${r[0]}</code></td><td><span class="pill ${r[2]}">${r[1]}</span></td><td>${r[3]}</td></tr>`).join('');
+
+  const A = [
+    ['1', 'HAX G1 & G2 · Làm rõ AI làm được gì & chắc tới đâu', 'Nhãn trạng thái nói rõ "Đã đủ 5 yếu tố · Cần Dược sĩ duyệt" hoặc "Ngắt mạch cấp cứu", không dùng con số % mơ hồ.'],
+    ['2', 'HAX G11 + PAIR Explainability', 'Dòng "Dựa vào" ở cuối tin nhắn chỉ rõ căn cứ: bé 4 tuổi, dị ứng Ibuprofen, quy định kháng sinh kê đơn.'],
+    ['3', 'HAX G10 · Thu hẹp & Xin phép rõ ràng', 'Hỏi xác nhận trước khi lưu ghi chú dị ứng Ibuprofen vào hồ sơ sức khỏe.'],
+    ['4', 'HAX G8/G9 + PAIR Feedback & Control', 'Giữ bản nháp đếm ngược 03:00 chờ Dược sĩ duyệt (mức ②), nút "Xoá ghi chú vừa lưu", hoặc "Hoàn tác đơn 10:00" (mức ③).'],
+    ['5', 'PAIR Errors + Graceful Failure', 'Luôn có nút "Gặp Dược sĩ trực" và Console hiển thị rõ Ai được báo · Sau bao lâu · Nhận được gì.'],
+    ['6', 'HAX G9 · Sửa dễ & Lối đi khi bị Cấm', 'Đổi sản phẩm nháp ngay trên thẻ; khi bị cấm bán kháng sinh Augmentin thì mở lối đi gửi ảnh đơn thuốc.']
+  ];
+  $('#ann-list').innerHTML = A.filter(a => ({1:['1','2','3','5','6'], 2:['1','2','3','4','5','6'], 3:['2','4','5','6']})[L].includes(a[0])).map(a => `<li><span class="n">${a[0]}</span><b>${a[1]}</b> — ${a[2]}</li>`).join('') + (L === 1 ? '<li style="color:#6b6f6c">Ở mức ① không có ④: AI không soạn nháp giữ chỗ nên Dược sĩ phải gõ tay lại từ đầu.</li>' : L === 3 ? '<li style="color:#a33b2b">Ở mức ③ mất ① và ③: AI không báo giới hạn, tự chốt cả kháng sinh kê đơn và tự lưu hồ sơ ngầm.</li>' : '');
+}
+
+document.querySelectorAll('.toggle button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.toggle button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  L = +b.dataset.l;
+  state = 'start';
+  render();
+});
+
+$('#ann').onchange = e => document.body.classList.toggle('hide-n', !e.target.checked);
+$('#ok').onchange = e => $('#send-etc').disabled = !e.target.checked;
+$('#cancel-etc').onclick = () => $('#m-etc').classList.remove('show');
+$('#send-etc').onclick = () => { $('#m-etc').classList.remove('show'); go('etc_sent'); };
+
+render();
+</script>
+</body>
+</html>
